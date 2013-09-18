@@ -384,3 +384,10 @@ removeClassWith f = addClassListWith (the (Int -> String -> JQueryIO $ List Stri
 
 -- TODO:
 -- removeProp
+
+public
+replaceAll : Content c => c -> JQuery -> JQueryIO JQuery
+replaceAll c q = do
+  c <- getContentPtr c
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.replaceAll(%1)" [FPtr, FPtr] FPtr) p c
