@@ -247,3 +247,43 @@ insertBefore c q = do
   c <- getContentPtr c
   p <- getContentPtr q
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.insertBefore(%1)" [FPtr, FPtr] FPtr) p c
+
+public
+getOffsetLeft : JQuery -> JQueryIO Int
+getOffsetLeft q = do
+  p <- getContentPtr q
+  liftIO $ mkForeign (FFun "%0.offset().left" [FPtr] FInt) p
+
+public
+getOffsetTop : JQuery -> JQueryIO Int
+getOffsetTop q = do
+  p <- getContentPtr q
+  liftIO $ mkForeign (FFun "%0.offset().top" [FPtr] FInt) p
+
+public
+getOffset : JQuery -> JQueryIO $ the Type (Int, Int)
+getOffset q = do
+  x <- getOffsetLeft q
+  y <- getOffsetTop q
+  return (x, y)
+
+public
+setOffsetLeft : Int -> JQuery -> JQueryIO JQuery
+setOffsetLeft x q = do
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.offset({ left: %1 })" [FPtr, FInt] FPtr) p x
+
+public
+setOffsetTop : Int -> JQuery -> JQueryIO JQuery
+setOffsetTop x q = do
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.offset({ top: %1 })" [FPtr, FInt] FPtr) p x
+
+public
+setOffset : Int -> Int -> JQuery -> JQueryIO JQuery
+setOffset x y q = do
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.offset({ left: %1, top: %2 })" [FPtr, FInt, FInt] FPtr) p x y
+
+-- TODO:
+-- setOffsetWith
