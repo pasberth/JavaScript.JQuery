@@ -59,10 +59,10 @@ appendTo c q = do
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.appendTo(%1)" [FPtr, FPtr] FPtr) p c
 
 public
-getAttr : String -> JQuery -> JQueryIO JQuery
+getAttr : String -> JQuery -> JQueryIO String
 getAttr k q = do
   p <- getContentPtr q
-  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.attr(%1)" [FPtr, FString] FPtr) p k
+  liftIO $ mkForeign (FFun "%0.attr(%1)" [FPtr, FString] FString) p k
 
 public
 setAttr : String -> String -> JQuery -> JQueryIO JQuery
@@ -110,10 +110,10 @@ cloneDeepWithDataAndEvents q = do
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.clone(true, true)" [FPtr] FPtr) p
 
 public
-getCSS : String -> JQuery -> JQueryIO JQuery
+getCSS : String -> JQuery -> JQueryIO String
 getCSS k q = do
   p <- getContentPtr q
-  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.css(%1)" [FPtr, FString] FPtr) p k
+  liftIO $ mkForeign (FFun "%0.css(%1)" [FPtr, FString] FString) p k
 
 public
 setCSS : String -> String -> JQuery -> JQueryIO JQuery
@@ -148,16 +148,17 @@ empty q = do
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.empty()" [FPtr] FPtr) p
 
 public
-hasClass : String -> JQuery -> JQueryIO JQuery
+hasClass : String -> JQuery -> JQueryIO Bool
 hasClass k q = do
   p <- getContentPtr q
-  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.hasClass(%1)" [FPtr, FString] FPtr) p k
+  s <- liftIO $ mkForeign (FFun "%0.hasClass(%1)" [FPtr, FString] FString) p k
+  if s == "false" then return True else return False
 
 public
-getHTML : JQuery -> JQueryIO Int
+getHTML : JQuery -> JQueryIO String
 getHTML q = do
   p <- getContentPtr q
-  liftIO $ mkForeign (FFun "%0.html()" [FPtr] FInt) p
+  liftIO $ mkForeign (FFun "%0.html()" [FPtr] FString) p
 
 public
 setHTML : String -> JQuery -> JQueryIO JQuery
