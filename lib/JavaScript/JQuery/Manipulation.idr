@@ -328,3 +328,6 @@ prependTo c q = do
   c <- getContentPtr c
   p <- getContentPtr q
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.prependTo(%1)" [FPtr, FPtr] FPtr) p c
+
+-- TODO:
+-- .prop()
