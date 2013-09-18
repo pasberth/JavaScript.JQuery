@@ -84,5 +84,15 @@ trigger : EventType -> JQuery -> JQueryIO JQuery
 trigger = customTrigger
 
 public
+customTriggerHandler : CustomEventType t => t -> JQuery -> JQueryIO JQuery
+customTriggerHandler t q = do
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.triggerHandler(%1)" [FPtr, FString] FPtr) p (customEventTypeToString t)
+
+public
+triggerHandler : EventType -> JQuery -> JQueryIO JQuery
+triggerHandler = customTriggerHandler
+
+public
 ready : JQueryIO $ the Type () -> JQueryIO $ the Type ()
 ready q = liftIO $ mkForeign (FFun "jQuery(%0)" [FFunction FUnit (FAny (IO ()))] FUnit) (runJQueryIO . const q)
