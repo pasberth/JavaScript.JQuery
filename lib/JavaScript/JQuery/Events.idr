@@ -31,17 +31,25 @@ delegate = customDelegate
 -- .live()
 
 public
-offEventList : Foldable t => t String -> JQuery -> JQueryIO JQuery
-offEventList ss q = do
+customOffEventList : CustomEventType t => List t -> JQuery -> JQueryIO JQuery
+customOffEventList ss q = do
   p <- getContentPtr q
-  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.off(%1)" [FPtr, FString] FPtr) p (unwords $ toList ss)
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.off(%1)" [FPtr, FString] FPtr) p (unwords $ toList $ map customEventTypeToString ss)
 
 public
-offSelector : (Selector s, Foldable t) => t String -> s -> JQuery -> JQueryIO JQuery
-offSelector ss s q = do
+offEventList : List EventType -> JQuery -> JQueryIO JQuery
+offEventList = customOffEventList
+
+public
+customOffSelector : (CustomEventType t, Selector s) => List t -> s -> JQuery -> JQueryIO JQuery
+customOffSelector ss s q = do
   s <- getSelectorPtr s
   p <- getContentPtr q
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.off(%1, %2)" [FPtr, FString, FPtr] FPtr) p (unwords $ toList ss) s
+
+public
+offSelector : Selector s => List EventType -> s -> JQuery -> JQueryIO JQuery
+offSelector = customOffSelector
 
 public
 customOnEventList : CustomEventType t => List t -> (Event -> Element -> JQueryIO $ the Type ()) -> JQuery -> JQueryIO JQuery
