@@ -412,3 +412,10 @@ replaceAll c q = do
   c <- getContentPtr c
   p <- getContentPtr q
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.replaceAll(%1)" [FPtr, FPtr] FPtr) p c
+
+public
+replaceWith : Content c => c -> JQuery -> JQueryIO JQuery
+replaceWith c q = do
+  c <- getContentPtr c
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.replaceWith(%1)" [FPtr, FPtr] FPtr) p c
