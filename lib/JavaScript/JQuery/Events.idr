@@ -74,5 +74,15 @@ oneSelector ss s f q = do
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.one(%1, %2, %3)" [FPtr, FString, FPtr, fEventFunction] FPtr) p (unwords $ toList ss) s (eventFunctionToFEventFunction f)
 
 public
+customTrigger : CustomEventType t => t -> JQuery -> JQueryIO JQuery
+customTrigger t q = do
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.trigger(%1)" [FPtr, FString] FPtr) p (customEventTypeToString t)
+
+public
+trigger : EventType -> JQuery -> JQueryIO JQuery
+trigger = customTrigger
+
+public
 ready : JQueryIO $ the Type () -> JQueryIO $ the Type ()
 ready q = liftIO $ mkForeign (FFun "jQuery(%0)" [FFunction FUnit (FAny (IO ()))] FUnit) (runJQueryIO . const q)
