@@ -3,10 +3,17 @@ module JavaScript.JQuery.Core
 import JavaScript.JQuery.Types
 
 public
-jQuery : Content c => c -> JQueryIO JQuery
-jQuery c = do
+jQueryContent : Content c => c -> JQueryIO JQuery
+jQueryContent c = do
   c <- getContentPtr c
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "jQuery(%0)"  [FPtr] FPtr) c
+
+public
+jQuerySelectorContext : Selector s => s -> Element -> JQueryIO JQuery
+jQuerySelectorContext s e = do
+  s <- getSelectorPtr s
+  e <- getContentPtr e
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "jQuery(%0, %1)" [FPtr, FPtr] FPtr) s e
 
 public
 holdReady : Bool -> JQuery -> JQueryIO JQuery
