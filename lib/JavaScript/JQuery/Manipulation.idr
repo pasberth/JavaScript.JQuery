@@ -287,3 +287,22 @@ setOffset x y q = do
 
 -- TODO:
 -- setOffsetWith
+
+public
+getPositionLeft : JQuery -> JQueryIO Int
+getPositionLeft q = do
+  p <- getContentPtr q
+  liftIO $ mkForeign (FFun "%0.position().left" [FPtr] FInt) p
+
+public
+getPositionTop : JQuery -> JQueryIO Int
+getPositionTop q = do
+  p <- getContentPtr q
+  liftIO $ mkForeign (FFun "%0.position().top" [FPtr] FInt) p
+
+public
+getPosition : JQuery -> JQueryIO $ the Type (Int, Int)
+getPosition q = do
+  x <- getPositionLeft q
+  y <- getPositionTop q
+  return (x, y)
