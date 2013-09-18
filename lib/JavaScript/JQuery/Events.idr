@@ -54,5 +54,12 @@ onEventList ss f q = do
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.on(%1, %2)" [FPtr, FString, fEventFunction] FPtr) p (unwords $ toList ss) (eventFunctionToFEventFunction f)
 
 public
+onSelector : (Selector s, Foldable t) => t String -> s -> (Event -> Element -> JQueryIO $ the Type ()) -> JQuery -> JQueryIO JQuery
+onSelector ss s f q = do
+  s <- getSelectorPtr s
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.on(%1, %2, %3)" [FPtr, FString, FPtr, fEventFunction] FPtr) p (unwords $ toList ss) s (eventFunctionToFEventFunction f)
+
+public
 ready : JQueryIO $ the Type () -> JQueryIO $ the Type ()
 ready q = liftIO $ mkForeign (FFun "jQuery(%0)" [FFunction FUnit (FAny (IO ()))] FUnit) (runJQueryIO . const q)
