@@ -39,6 +39,30 @@ data Event : Type where
   MkEvent : Ptr -> Event
 
 public
+data EventType
+  = OnBlur
+  | OnChange
+  | OnClick
+  | OnDblclick
+  | OnFocus
+  | OnFocusion
+  | OnFocusout
+  | OnSelect
+  | OnSubmit
+  | OnKeydown
+  | OnKeypress
+  | OnKeyup
+  | OnHover
+  | OnMousedown
+  | OnMouseenter
+  | OnMouseleave
+  | OnMousemove
+  | OnMouseout
+  | OnMouseover
+  | OnMouseup
+  | OnToggle
+
+public
 class Selector (s : Type) where
   getSelectorPtr : s -> JQueryIO Ptr
 
@@ -47,8 +71,8 @@ class Content (c : Type) where
   getContentPtr : c -> JQueryIO Ptr
 
 public
-class EventType (t : Type) where
-  eventTypeToString : t -> String
+class CustomEventType (t : Type) where
+  customEventTypeToString : t -> String
 
 instance Selector String where
   getSelectorPtr s = do
@@ -68,8 +92,31 @@ instance Content String where
     p <- liftIO $ mkForeign (FFun "%0" [FString] FPtr) s
     return p
 
-instance EventType String where
-  eventTypeToString = id
+instance CustomEventType String where
+  customEventTypeToString = id
+
+instance CustomEventType EventType where
+  customEventTypeToString OnBlur = "blur"
+  customEventTypeToString OnChange = "change"
+  customEventTypeToString OnClick = "click"
+  customEventTypeToString OnDblclick = "dblclick"
+  customEventTypeToString OnFocus = "focus"
+  customEventTypeToString OnFocusion = "focusion"
+  customEventTypeToString OnFocusout = "focusout"
+  customEventTypeToString OnSelect = "select"
+  customEventTypeToString OnSubmit = "submit"
+  customEventTypeToString OnKeydown = "keydown"
+  customEventTypeToString OnKeypress = "keypress"
+  customEventTypeToString OnKeyup = "keyup"
+  customEventTypeToString OnHover = "hover"
+  customEventTypeToString OnMousedown = "mousedown"
+  customEventTypeToString OnMouseenter = "mouseenter"
+  customEventTypeToString OnMouseleave = "mouseleave"
+  customEventTypeToString OnMousemove = "mousemove"
+  customEventTypeToString OnMouseout = "mouseout"
+  customEventTypeToString OnMouseover = "mouseover"
+  customEventTypeToString OnMouseup = "mouseup"
+  customEventTypeToString OnToggle = "toggle"
 
 public
 liftIOPtrToJQueryIOJQuery : IO Ptr -> JQueryIO JQuery
