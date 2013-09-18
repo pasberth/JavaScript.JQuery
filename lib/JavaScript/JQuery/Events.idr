@@ -32,6 +32,9 @@ public
 delegate : Selector s => s -> EventType -> (Event -> Element -> JQueryIO $ the Type ()) -> JQuery -> JQueryIO JQuery
 delegate = customDelegate
 
+-- TODO:
+-- .live()
+
 public
 ready : JQueryIO $ the Type () -> JQueryIO $ the Type ()
 ready q = liftIO $ mkForeign (FFun "jQuery(%0)" [FFunction FUnit (FAny (IO ()))] FUnit) (runJQueryIO . const q)
