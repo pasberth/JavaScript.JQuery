@@ -381,3 +381,6 @@ removeClassListWith f q = do
 public
 removeClassWith : (Int -> String -> JQueryIO String) -> JQuery -> JQueryIO JQuery
 removeClassWith f = addClassListWith (the (Int -> String -> JQueryIO $ List String) (\a => \b => (f a b) >>= (\s => return [s])))
+
+-- TODO:
+-- removeProp
