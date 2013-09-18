@@ -13,15 +13,20 @@ addClass : String -> JQuery -> JQueryIO JQuery
 addClass s = addClassList $ the (List String) [s]
 
 public
-addClassListWith : Foldable t => (Int -> String -> JQueryIO $ t String) -> JQuery -> JQueryIO JQuery
+addClassListWith : Foldable t => (Int -> String -> Element -> JQueryIO (t String)) -> JQuery -> JQueryIO JQuery
 addClassListWith f q = do
-  let f' = \a => \b => runJQueryIO $ f a b >>= return . unwords . toList
-  p <- getContentPtr q
-  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.addClass(%1)" [FPtr, FFunction FInt (FFunction FString (FAny (IO String)))] FPtr) p f'
+    p <- getContentPtr q
+    liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.addClass(function () { %1.apply(this, [this].concat([].slice.call(arguments, 0))) })"
+                                                [FPtr, FFunction FPtr (FFunction FInt (FFunction FString (FAny (IO String))))] FPtr)
+                                          p f'
+  where f' : Ptr -> Int -> String -> IO String
+        f' p i s = runJQueryIO $ f i s (MkElement p) >>= return . unwords . toList
 
 public
-addClassWith : (Int -> String -> JQueryIO String) -> JQuery -> JQueryIO JQuery
-addClassWith f = addClassListWith (the (Int -> String -> JQueryIO $ List String) (\a => \b => (f a b) >>= (\s => return [s])))
+addClassWith : (Int -> String -> Element -> JQueryIO String) -> JQuery -> JQueryIO JQuery
+addClassWith f = addClassListWith f' where
+  f' : Int -> String -> Element -> JQueryIO (List String)
+  f' a b e = (f a b e) >>= (\s => return [s])
 
 public
 after : Content c => c -> JQuery -> JQueryIO JQuery
@@ -31,11 +36,11 @@ after c q = do
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.after(%1)" [FPtr, FPtr] FPtr) p c
 
 public
-afterWith : Content c => (Int -> JQueryIO c) -> JQuery -> JQueryIO JQuery
+afterWith : Content c => (Int -> Element -> JQueryIO c) -> JQuery -> JQueryIO JQuery
 afterWith f q = do
-  let f' = \x => runJQueryIO $ (f x) >>= getContentPtr
+  let f' = \p => \i => runJQueryIO $ (f i (MkElement p)) >>= getContentPtr
   p <- getContentPtr q
-  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.after(%1)" [FPtr, FFunction FInt (FAny (IO Ptr))] FPtr) p f'
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.after(function () { %1.apply(this, [this].concat([].slice.call(arguments, 0))) })" [FPtr, FFunction FPtr (FFunction FInt (FAny (IO Ptr)))] FPtr) p f'
 
 public
 append : Content c => c -> JQuery -> JQueryIO JQuery
@@ -45,11 +50,13 @@ append c q = do
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.append(%1)" [FPtr, FPtr] FPtr) p c
 
 public
-appendWith : Content c => (Int -> String -> JQueryIO c) -> JQuery -> JQueryIO JQuery
+appendWith : Content c => (Int -> String -> Element -> JQueryIO c) -> JQuery -> JQueryIO JQuery
 appendWith f q = do
-  let f' = \a => \b => runJQueryIO $ f a b >>= getContentPtr
-  p <- getContentPtr q
-  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.append(%1)" [FPtr, FFunction FInt (FFunction FString (FAny (IO Ptr)))] FPtr) p f'
+    p <- getContentPtr q
+    liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.append(function () { %1.apply(this, [this].concat([].slice.call(arguments, 0))) })" [FPtr, FFunction FPtr (FFunction FInt (FFunction FString (FAny (IO Ptr))))] FPtr) p f'
+  where
+    f' : Ptr -> Int -> String -> IO Ptr
+    f' p a b = runJQueryIO $ f a b (MkElement p) >>= getContentPtr
 
 public
 appendTo : Content c => c -> JQuery -> JQueryIO JQuery
@@ -71,11 +78,13 @@ setAttr k v q = do
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.attr(%1, %2)" [FPtr, FString, FString] FPtr) p k v
 
 public
-setAttrWith : String -> (Int -> String -> JQueryIO String) -> JQuery -> JQueryIO JQuery
+setAttrWith : String -> (Int -> String -> Element -> JQueryIO String) -> JQuery -> JQueryIO JQuery
 setAttrWith k f q = do
-  let f' = \a => \b => runJQueryIO $ f a b
-  p <- getContentPtr q
-  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.attr(%1, %2)" [FPtr, FString, FFunction FInt (FFunction FString (FAny (IO String)))] FPtr) p k f'
+    p <- getContentPtr q
+    liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.attr(%1, (function () { %2.apply(this, [this].concat([].slice.call(arguments, 0))) }))" [FPtr, FString, FFunction FPtr (FFunction FInt (FFunction FString (FAny (IO String))))] FPtr) p k f'
+  where
+    f' : Ptr -> Int -> String -> IO String
+    f' p a b = runJQueryIO $ f a b (MkElement p)
 
 public
 before : Content c => c -> JQuery -> JQueryIO JQuery
@@ -85,11 +94,13 @@ before c q = do
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.before(%1)" [FPtr, FPtr] FPtr) p c
 
 public
-beforeWith : Content c => (Int -> JQueryIO c) -> JQuery -> JQueryIO JQuery
+beforeWith : Content c => (Int -> Element -> JQueryIO c) -> JQuery -> JQueryIO JQuery
 beforeWith f q = do
-  let f' = \x => runJQueryIO $ (f x) >>= getContentPtr
-  p <- getContentPtr q
-  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.before(%1)" [FPtr, FFunction FInt (FAny (IO Ptr))] FPtr) p f'
+    p <- getContentPtr q
+    liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.before(function () { %1.apply(this, [this].concat([].slice.call(arguments, 0))) })" [FPtr, FFunction FPtr (FFunction FInt (FAny (IO Ptr)))] FPtr) p f'
+  where
+    f' : Ptr -> Int -> IO Ptr
+    f' p x = runJQueryIO $ f x (MkElement p) >>= getContentPtr
 
 public
 clone : JQuery -> JQueryIO JQuery
@@ -122,11 +133,13 @@ setCSS k v q = do
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.css(%1, %2)" [FPtr, FString, FString] FPtr) p k v
 
 public
-setCSSWith : String -> (Int -> String -> JQueryIO String) -> JQuery -> JQueryIO JQuery
+setCSSWith : String -> (Int -> String -> Element -> JQueryIO String) -> JQuery -> JQueryIO JQuery
 setCSSWith k f q = do
-  let f' = \x => runJQueryIO . f x
-  p <- getContentPtr q
-  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.css(%1, %2)" [FPtr, FString, FFunction FInt (FFunction FString (FAny (IO String)))] FPtr) p k f'
+    p <- getContentPtr q
+    liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.css(%1, (function () { %2.apply(this, [this].concat([].slice.call(arguments, 0))) }))" [FPtr, FString, FFunction FPtr (FFunction FInt (FFunction FString (FAny (IO String))))] FPtr) p k f'
+  where
+    f' : Ptr -> Int -> String -> IO String
+    f' p x y = runJQueryIO $ f x y (MkElement p)
 
 public
 detach : JQuery -> JQueryIO JQuery
@@ -167,11 +180,13 @@ setHTML s q = do
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.html(%1)" [FPtr, FString] FPtr) p s
 
 public
-setHTMLWith : (Int -> String -> JQueryIO String) -> JQuery -> JQueryIO JQuery
+setHTMLWith : (Int -> String -> Element -> JQueryIO String) -> JQuery -> JQueryIO JQuery
 setHTMLWith f q = do
-  let f' = \x => runJQueryIO . f x
-  p <- getContentPtr q
-  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.html(%1, %2)" [FPtr, FFunction FInt (FFunction FString (FAny (IO String)))] FPtr) p f'
+    p <- getContentPtr q
+    liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.html(function () { %1.apply(this, [this].concat([].slice.call(arguments, 0))) })" [FPtr, FFunction FPtr (FFunction FInt (FFunction FString (FAny (IO String))))] FPtr) p f'
+  where
+    f' : Ptr -> Int -> String -> IO String
+    f' p x y = runJQueryIO $ f x y (MkElement p)
 
 public
 getHeight : JQuery -> JQueryIO Int
@@ -186,11 +201,13 @@ setHeight i q = do
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.height(%1)" [FPtr, FInt] FPtr) p i
 
 public
-setHeightWith : (Int -> Int -> JQueryIO Int) -> JQuery -> JQueryIO JQuery
+setHeightWith : (Int -> Int -> Element -> JQueryIO Int) -> JQuery -> JQueryIO JQuery
 setHeightWith f q = do
-  let f' = \x => runJQueryIO . f x
-  p <- getContentPtr q
-  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.height(%1, %2)" [FPtr, FFunction FInt (FFunction FInt (FAny (IO Int)))] FPtr) p f'
+    p <- getContentPtr q
+    liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.height(function () { %1.apply(this, [this].concat([].slice.call(arguments, 0))) })" [FPtr, FFunction FPtr (FFunction FInt (FFunction FInt (FAny (IO Int))))] FPtr) p f'
+  where
+    f' : Ptr -> Int -> Int -> IO Int
+    f' p x y = runJQueryIO $ f x y (MkElement p)
 
 public
 getWidth : JQuery -> JQueryIO Int
@@ -205,11 +222,13 @@ setWidth i q = do
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.width(%1)" [FPtr, FInt] FPtr) p i
 
 public
-setWidthWith : (Int -> Int -> JQueryIO Int) -> JQuery -> JQueryIO JQuery
+setWidthWith : (Int -> Int -> Element -> JQueryIO Int) -> JQuery -> JQueryIO JQuery
 setWidthWith f q = do
-  let f' = \x => runJQueryIO . f x
-  p <- getContentPtr q
-  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.width(%1, %2)" [FPtr, FFunction FInt (FFunction FInt (FAny (IO Int)))] FPtr) p f'
+    p <- getContentPtr q
+    liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.width(function () { %1.apply(this, [this].concat([].slice.call(arguments, 0))) })" [FPtr, FFunction FPtr (FFunction FInt (FFunction FInt (FAny (IO Int))))] FPtr) p f'
+  where
+    f' : Ptr -> Int -> Int -> IO Int
+    f' p x y = runJQueryIO $ f x y (MkElement p)
 
 public
 innerHeight : JQuery -> JQueryIO Int
@@ -372,15 +391,17 @@ removeClassAll q = do
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.removeClass()" [FPtr] FPtr) p
 
 public
-removeClassListWith : Foldable t => (Int -> String -> JQueryIO $ t String) -> JQuery -> JQueryIO JQuery
+removeClassListWith : Foldable t => (Int -> String -> Element -> JQueryIO $ t String) -> JQuery -> JQueryIO JQuery
 removeClassListWith f q = do
-  let f' = \a => \b => runJQueryIO $ f a b >>= return . unwords . toList
-  p <- getContentPtr q
-  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.removeClass(%1)" [FPtr, FFunction FInt (FFunction FString (FAny (IO String)))] FPtr) p f'
+    p <- getContentPtr q
+    liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.removeClass(function () { %1.apply(this, [this].concat([].slice.call(arguments, 0))) })" [FPtr, FFunction FPtr (FFunction FInt (FFunction FString (FAny (IO String))))] FPtr) p f'
+  where
+    f' : (Ptr -> Int -> String -> IO String)
+    f' p a b = runJQueryIO $ f a b (MkElement p) >>= return . unwords . toList
 
 public
-removeClassWith : (Int -> String -> JQueryIO String) -> JQuery -> JQueryIO JQuery
-removeClassWith f = addClassListWith (the (Int -> String -> JQueryIO $ List String) (\a => \b => (f a b) >>= (\s => return [s])))
+removeClassWith : (Int -> String -> Element -> JQueryIO String) -> JQuery -> JQueryIO JQuery
+removeClassWith f = addClassListWith (the (Int -> String -> Element -> JQueryIO $ List String) (\a => \b => \e => (f a b e) >>= (\s => return [s])))
 
 -- TODO:
 -- removeProp
