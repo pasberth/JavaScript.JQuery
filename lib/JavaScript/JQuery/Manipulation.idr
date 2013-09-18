@@ -331,3 +331,16 @@ prependTo c q = do
 
 -- TODO:
 -- .prop()
+
+public
+remove : JQuery -> JQueryIO JQuery
+remove q = do
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.remove()" [FPtr] FPtr) p
+
+public
+removeSelector : Selector s => s -> JQuery -> JQueryIO JQuery
+removeSelector s q = do
+  s <- getSelectorPtr s
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.remove(%1)" [FPtr, FPtr] FPtr) p s
