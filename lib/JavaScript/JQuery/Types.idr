@@ -46,6 +46,10 @@ public
 class Content (c : Type) where
   getContentPtr : c -> JQueryIO Ptr
 
+public
+class EventType (t : Type) where
+  eventTypeToString : t -> String
+
 instance Selector String where
   getSelectorPtr s = do
     p <- liftIO $ mkForeign (FFun "%0" [FString] FPtr) s
@@ -63,6 +67,9 @@ instance Content String where
   getContentPtr s = do
     p <- liftIO $ mkForeign (FFun "%0" [FString] FPtr) s
     return p
+
+instance EventType String where
+  eventTypeToString = id
 
 public
 liftIOPtrToJQueryIOJQuery : IO Ptr -> JQueryIO JQuery
