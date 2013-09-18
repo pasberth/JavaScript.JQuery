@@ -15,5 +15,9 @@ customBind t f q = do
     f' evp elp = runJQueryIO $ f (MkEvent evp) (MkElement elp)
 
 public
+bind : EventType -> (Event -> Element -> JQueryIO $ the Type ()) -> JQuery -> JQueryIO JQuery
+bind = customBind
+
+public
 ready : JQueryIO $ the Type () -> JQueryIO $ the Type ()
 ready q = liftIO $ mkForeign (FFun "jQuery(%0)" [FFunction FUnit (FAny (IO ()))] FUnit) (runJQueryIO . const q)
