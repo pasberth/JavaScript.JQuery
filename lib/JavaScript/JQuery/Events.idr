@@ -45,7 +45,7 @@ customOffSelector : (CustomEventType t, Selector s) => List t -> s -> JQuery -> 
 customOffSelector ss s q = do
   s <- getSelectorPtr s
   p <- getContentPtr q
-  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.off(%1, %2)" [FPtr, FString, FPtr] FPtr) p (unwords $ toList ss) s
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.off(%1, %2)" [FPtr, FString, FPtr] FPtr) p (unwords $ toList $ map customEventTypeToString ss) s
 
 public
 offSelector : Selector s => List EventType -> s -> JQuery -> JQueryIO JQuery
