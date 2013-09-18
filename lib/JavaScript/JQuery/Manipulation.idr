@@ -510,5 +510,12 @@ wrapWith f q = do
     f' : Int -> IO Ptr
     f' i = runJQueryIO $ f i >>= getContentPtr
 
+public
+wrapAll : Content c => c -> JQuery -> JQueryIO JQuery
+wrapAll c q = do
+  c <- getContentPtr c
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.wrapAll(%1)" [FPtr, FPtr] FPtr) p c
+
 -- TODO:
 -- .val()
