@@ -65,17 +65,25 @@ onSelector : Selector s => List EventType -> s -> (Event -> Element -> JQueryIO 
 onSelector = customOnSelector
 
 public
-oneEventList : Foldable t => t String -> (Event -> Element -> JQueryIO $ the Type ()) -> JQuery -> JQueryIO JQuery
-oneEventList ss f q = do
+customOneEventList : CustomEventType t => List t -> (Event -> Element -> JQueryIO $ the Type ()) -> JQuery -> JQueryIO JQuery
+customOneEventList ss f q = do
   p <- getContentPtr q
-  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.one(%1, %2)" [FPtr, FString, FFunction FPtr (FFunction FPtr (FAny (IO ())))] FPtr) p (unwords $ toList ss) (eventFunctionToFEventFunction f)
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.one(%1, %2)" [FPtr, FString, FFunction FPtr (FFunction FPtr (FAny (IO ())))] FPtr) p (unwords $ toList $ map customEventTypeToString ss) (eventFunctionToFEventFunction f)
 
 public
-oneSelector : (Selector s, Foldable t) => t String -> s -> (Event -> Element -> JQueryIO $ the Type ()) -> JQuery -> JQueryIO JQuery
-oneSelector ss s f q = do
+oneEventList : List EventType -> (Event -> Element -> JQueryIO $ the Type ()) -> JQuery -> JQueryIO JQuery
+oneEventList = customOneEventList
+
+public
+customOneSelector : (CustomEventType t, Selector s) => List t -> s -> (Event -> Element -> JQueryIO $ the Type ()) -> JQuery -> JQueryIO JQuery
+customOneSelector ss s f q = do
   s <- getSelectorPtr s
   p <- getContentPtr q
-  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.one(%1, %2, %3)" [FPtr, FString, FPtr, FFunction FPtr (FFunction FPtr (FAny (IO ())))] FPtr) p (unwords $ toList ss) s (eventFunctionToFEventFunction f)
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.one(%1, %2, %3)" [FPtr, FString, FPtr, FFunction FPtr (FFunction FPtr (FAny (IO ())))] FPtr) p (unwords $ toList $ map customEventTypeToString ss) s (eventFunctionToFEventFunction f)
+
+public
+oneSelector : Selector s => List EventType -> s -> (Event -> Element -> JQueryIO $ the Type ()) -> JQuery -> JQueryIO JQuery
+oneSelector = customOneSelector
 
 public
 customTrigger : CustomEventType t => t -> JQuery -> JQueryIO JQuery
