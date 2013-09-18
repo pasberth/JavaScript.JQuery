@@ -306,3 +306,24 @@ getPosition q = do
   x <- getPositionLeft q
   y <- getPositionTop q
   return (x, y)
+
+public
+prepend : Content c => c -> JQuery -> JQueryIO JQuery
+prepend c q = do
+  c <- getContentPtr c
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.prepend(%1)" [FPtr, FPtr] FPtr) p c
+
+public
+prependWith : Content c => (Int -> String -> JQueryIO c) -> JQuery -> JQueryIO JQuery
+prependWith f q = do
+  let f' = \a => \b => runJQueryIO $ f a b >>= getContentPtr
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.prepend(%1)" [FPtr, FFunction FInt (FFunction FString (FAny (IO Ptr)))] FPtr) p f'
+
+public
+prependTo : Content c => c -> JQuery -> JQueryIO JQuery
+prependTo c q = do
+  c <- getContentPtr c
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.prependTo(%1)" [FPtr, FPtr] FPtr) p c
