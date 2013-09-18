@@ -493,3 +493,6 @@ unwrap : JQuery -> JQueryIO JQuery
 unwrap q = do
   p <- getContentPtr q
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.unwrap()" [FPtr] FPtr) p
+
+-- TODO:
+-- .val()
