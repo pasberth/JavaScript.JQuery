@@ -54,11 +54,15 @@ onEventList : List EventType -> (Event -> Element -> JQueryIO $ the Type ()) -> 
 onEventList = customOnEventList
 
 public
-onSelector : (Selector s, Foldable t) => t String -> s -> (Event -> Element -> JQueryIO $ the Type ()) -> JQuery -> JQueryIO JQuery
-onSelector ss s f q = do
+customOnSelector : (CustomEventType t, Selector s) => List t -> s -> (Event -> Element -> JQueryIO $ the Type ()) -> JQuery -> JQueryIO JQuery
+customOnSelector ss s f q = do
   s <- getSelectorPtr s
   p <- getContentPtr q
-  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.on(%1, %2, %3)" [FPtr, FString, FPtr, FFunction FPtr (FFunction FPtr (FAny (IO ())))] FPtr) p (unwords $ toList ss) s (eventFunctionToFEventFunction f)
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.on(%1, %2, %3)" [FPtr, FString, FPtr, FFunction FPtr (FFunction FPtr (FAny (IO ())))] FPtr) p (unwords $ toList $ map customEventTypeToString ss) s (eventFunctionToFEventFunction f)
+
+public
+onSelector : Selector s => List EventType -> s -> (Event -> Element -> JQueryIO $ the Type ()) -> JQuery -> JQueryIO JQuery
+onSelector = customOnSelector
 
 public
 oneEventList : Foldable t => t String -> (Event -> Element -> JQueryIO $ the Type ()) -> JQuery -> JQueryIO JQuery
