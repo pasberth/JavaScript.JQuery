@@ -401,7 +401,7 @@ removeClassListWith f q = do
 
 public
 removeClassWith : (Int -> String -> Element -> JQueryIO String) -> JQuery -> JQueryIO JQuery
-removeClassWith f = addClassListWith (the (Int -> String -> Element -> JQueryIO $ List String) (\a => \b => \e => (f a b e) >>= (\s => return [s])))
+removeClassWith f = removeClassListWith (the (Int -> String -> Element -> JQueryIO $ List String) (\a => \b => \e => (f a b e) >>= (\s => return [s])))
 
 -- TODO:
 -- removeProp
@@ -464,3 +464,26 @@ setTextWith f q = do
   where
     f' : Ptr -> Int -> String -> IO String
     f' p x y = runJQueryIO $ f x y (MkElement p)
+
+public
+toggleClassList : Foldable t => t String -> JQuery -> JQueryIO JQuery
+toggleClassList ss q = do
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.toggleClass(%1)" [FPtr, FString] FPtr) p (unwords $ toList ss)
+
+public
+toggleClass : String -> JQuery -> JQueryIO JQuery
+toggleClass s = toggleClassList $ the (List String) [s]
+
+public
+toggleClassListWith : Foldable t => (Int -> String -> Element -> JQueryIO $ t String) -> JQuery -> JQueryIO JQuery
+toggleClassListWith f q = do
+    p <- getContentPtr q
+    liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.toggleClass(function () { return %1.apply(this, [this].concat([].slice.call(arguments, 0))) })" [FPtr, FFunction FPtr (FFunction FInt (FFunction FString (FAny (IO String))))] FPtr) p f'
+  where
+    f' : (Ptr -> Int -> String -> IO String)
+    f' p a b = runJQueryIO $ f a b (MkElement p) >>= return . unwords . toList
+
+public
+toggleClassWith : (Int -> String -> Element -> JQueryIO String) -> JQuery -> JQueryIO JQuery
+toggleClassWith f = toggleClassListWith (the (Int -> String -> Element -> JQueryIO $ List String) (\a => \b => \e => (f a b e) >>= (\s => return [s])))
