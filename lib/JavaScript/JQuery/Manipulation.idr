@@ -3,25 +3,25 @@ module JavaScript.JQuery.Manipulation
 import JavaScript.JQuery.Types
 
 public
-addClassAll : Foldable t => t String -> JQuery -> JQueryIO JQuery
-addClassAll ss q = do
+addClassList : Foldable t => t String -> JQuery -> JQueryIO JQuery
+addClassList ss q = do
   p <- getContentPtr q
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.addClass(%1)" [FPtr, FString] FPtr) p (unwords $ toList ss)
 
 public
 addClass : String -> JQuery -> JQueryIO JQuery
-addClass s = addClassAll $ the (List String) [s]
+addClass s = addClassList $ the (List String) [s]
 
 public
-addClassAllWith : Foldable t => (Int -> String -> JQueryIO $ t String) -> JQuery -> JQueryIO JQuery
-addClassAllWith f q = do
+addClassListWith : Foldable t => (Int -> String -> JQueryIO $ t String) -> JQuery -> JQueryIO JQuery
+addClassListWith f q = do
   let f' = \a => \b => runJQueryIO $ f a b >>= return . unwords . toList
   p <- getContentPtr q
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.addClass(%1)" [FPtr, FFunction FInt (FFunction FString (FAny (IO String)))] FPtr) p f'
 
 public
 addClassWith : (Int -> String -> JQueryIO String) -> JQuery -> JQueryIO JQuery
-addClassWith f = addClassAllWith (the (Int -> String -> JQueryIO $ List String) (\a => \b => (f a b) >>= (\s => return [s])))
+addClassWith f = addClassListWith (the (Int -> String -> JQueryIO $ List String) (\a => \b => (f a b) >>= (\s => return [s])))
 
 public
 after : Content c => c -> JQuery -> JQueryIO JQuery
@@ -344,3 +344,40 @@ removeSelector s q = do
   s <- getSelectorPtr s
   p <- getContentPtr q
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.remove(%1)" [FPtr, FPtr] FPtr) p s
+
+public
+removeAttrList : Foldable t => t String -> JQuery -> JQueryIO JQuery
+removeAttrList ss q = do
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.removeAttr(%1)" [FPtr, FString] FPtr) p (unwords $ toList ss)
+
+public
+removeAttr : String -> JQuery -> JQueryIO JQuery
+removeAttr s = removeAttrList $ the (List String) [s]
+
+public
+removeClassList : Foldable t => t String -> JQuery -> JQueryIO JQuery
+removeClassList ss q = do
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.removeClass(%1)" [FPtr, FString] FPtr) p (unwords $ toList ss)
+
+public
+removeClass : String -> JQuery -> JQueryIO JQuery
+removeClass s = removeClassList $ the (List String) [s]
+
+public
+removeClassAll : JQuery -> JQueryIO JQuery
+removeClassAll q = do
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.removeClass()" [FPtr] FPtr) p
+
+public
+removeClassListWith : Foldable t => (Int -> String -> JQueryIO $ t String) -> JQuery -> JQueryIO JQuery
+removeClassListWith f q = do
+  let f' = \a => \b => runJQueryIO $ f a b >>= return . unwords . toList
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.removeClass(%1)" [FPtr, FFunction FInt (FFunction FString (FAny (IO String)))] FPtr) p f'
+
+public
+removeClassWith : (Int -> String -> JQueryIO String) -> JQuery -> JQueryIO JQuery
+removeClassWith f = addClassListWith (the (Int -> String -> JQueryIO $ List String) (\a => \b => (f a b) >>= (\s => return [s])))
