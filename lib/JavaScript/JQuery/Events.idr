@@ -44,10 +44,14 @@ offSelector ss s q = do
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.off(%1, %2)" [FPtr, FString, FPtr] FPtr) p (unwords $ toList ss) s
 
 public
-onEventList : Foldable t => t String -> (Event -> Element -> JQueryIO $ the Type ()) -> JQuery -> JQueryIO JQuery
-onEventList ss f q = do
+customOnEventList : CustomEventType t => List t -> (Event -> Element -> JQueryIO $ the Type ()) -> JQuery -> JQueryIO JQuery
+customOnEventList ss f q = do
   p <- getContentPtr q
-  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.on(%1, %2)" [FPtr, FString, FFunction FPtr (FFunction FPtr (FAny (IO ())))] FPtr) p (unwords $ toList ss) (eventFunctionToFEventFunction f)
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.on(%1, %2)" [FPtr, FString, FFunction FPtr (FFunction FPtr (FAny (IO ())))] FPtr) p (unwords $ map customEventTypeToString ss) (eventFunctionToFEventFunction f)
+
+public
+onEventList : List EventType -> (Event -> Element -> JQueryIO $ the Type ()) -> JQuery -> JQueryIO JQuery
+onEventList = customOnEventList
 
 public
 onSelector : (Selector s, Foldable t) => t String -> s -> (Event -> Element -> JQueryIO $ the Type ()) -> JQuery -> JQueryIO JQuery
