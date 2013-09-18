@@ -443,3 +443,24 @@ setScrollTop : Int -> JQuery -> JQueryIO JQuery
 setScrollTop i q = do
   p <- getContentPtr q
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.scrollTop(%1)" [FPtr, FInt] FPtr) p i
+
+public
+getText : JQuery -> JQueryIO String
+getText q = do
+  p <- getContentPtr q
+  liftIO $ mkForeign (FFun "%0.text()" [FPtr] FString) p
+
+public
+setText : String -> JQuery -> JQueryIO JQuery
+setText v q = do
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.text(%1)" [FPtr, FString] FPtr) p v
+
+public
+setTextWith : (Int -> String -> Element -> JQueryIO String) -> JQuery -> JQueryIO JQuery
+setTextWith f q = do
+    p <- getContentPtr q
+    liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.css((function () { %1.apply(this, [this].concat([].slice.call(arguments, 0))) }))" [FPtr, FFunction FPtr (FFunction FInt (FFunction FString (FAny (IO String))))] FPtr) p f'
+  where
+    f' : Ptr -> Int -> String -> IO String
+    f' p x y = runJQueryIO $ f x y (MkElement p)
