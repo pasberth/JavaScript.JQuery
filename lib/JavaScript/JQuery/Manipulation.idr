@@ -487,3 +487,9 @@ toggleClassListWith f q = do
 public
 toggleClassWith : (Int -> String -> Element -> JQueryIO String) -> JQuery -> JQueryIO JQuery
 toggleClassWith f = toggleClassListWith (the (Int -> String -> Element -> JQueryIO $ List String) (\a => \b => \e => (f a b e) >>= (\s => return [s])))
+
+public
+unwrap : JQuery -> JQueryIO JQuery
+unwrap q = do
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.unwrap()" [FPtr] FPtr) p
