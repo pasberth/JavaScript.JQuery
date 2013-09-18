@@ -48,7 +48,7 @@ data EventType
   | OnClick
   | OnDblclick
   | OnFocus
-  | OnFocusion
+  | OnFocusin
   | OnFocusout
   | OnSelect
   | OnSubmit
@@ -107,7 +107,7 @@ instance CustomEventType EventType where
   customEventTypeToString OnClick = "click"
   customEventTypeToString OnDblclick = "dblclick"
   customEventTypeToString OnFocus = "focus"
-  customEventTypeToString OnFocusion = "focusion"
+  customEventTypeToString OnFocusin = "focusin"
   customEventTypeToString OnFocusout = "focusout"
   customEventTypeToString OnSelect = "select"
   customEventTypeToString OnSubmit = "submit"
