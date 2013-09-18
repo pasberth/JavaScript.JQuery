@@ -40,7 +40,10 @@ data Event : Type where
 
 public
 data EventType
-  = OnBlur
+  = OnResize
+  | OnScroll
+  | OnReady
+  | OnBlur
   | OnChange
   | OnClick
   | OnDblclick
@@ -96,6 +99,9 @@ instance CustomEventType String where
   customEventTypeToString = id
 
 instance CustomEventType EventType where
+  customEventTypeToString OnResize = "resize"
+  customEventTypeToString OnScroll = "scroll"
+  customEventTypeToString OnReady = "ready"
   customEventTypeToString OnBlur = "blur"
   customEventTypeToString OnChange = "change"
   customEventTypeToString OnClick = "click"
