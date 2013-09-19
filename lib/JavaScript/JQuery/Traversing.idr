@@ -234,3 +234,16 @@ getParentSelector s q = do
   s <- getSelectorPtr s
   p <- getContentPtr q
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.parent(%1)" [FPtr, FPtr] FPtr) p s
+
+public
+getParents : JQuery -> JQueryIO JQuery
+getParents q = do
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.parents()" [FPtr] FPtr) p
+
+public
+getParentsSelector : Selector s => s -> JQuery -> JQueryIO JQuery
+getParentsSelector s q = do
+  s <- getSelectorPtr s
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.parents(%1)" [FPtr, FPtr] FPtr) p s
