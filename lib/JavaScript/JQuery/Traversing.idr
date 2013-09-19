@@ -122,24 +122,11 @@ hasElement (MkElement s) q = do
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.has(%1)" [FPtr, FPtr] FPtr) p s
 
 public
-isSelector : Selector s => s -> JQuery -> JQueryIO JQuery
-isSelector s q = do
-  s <- getSelectorPtr s
+is : Content c => c -> JQuery -> JQueryIO JQuery
+is c q = do
+  c <- getContentPtr c
   p <- getContentPtr q
-  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.is(%1)" [FPtr, FPtr] FPtr) p s
-
-public
-isElement : Element -> JQuery -> JQueryIO JQuery
-isElement (MkElement s) q = do
-  p <- getContentPtr q
-  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.is(%1)" [FPtr, FPtr] FPtr) p s
-
-public
-isJQuery : JQuery -> JQuery -> JQueryIO JQuery
-isJQuery s q = do
-  s <- getContentPtr s
-  p <- getContentPtr q
-  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.is(%1)" [FPtr, FPtr] FPtr) p s
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.is(%1)" [FPtr, FPtr] FPtr) p c
 
 isWith : (Int -> Element -> JQueryIO Bool) -> JQuery -> JQueryIO JQuery
 isWith f q = do
