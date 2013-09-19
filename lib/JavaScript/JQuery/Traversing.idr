@@ -220,3 +220,37 @@ getNextAllSelector s q = do
   s <- getSelectorPtr s
   p <- getContentPtr q
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.nextAll(%1)" [FPtr, FPtr] FPtr) p s
+
+public
+getNextUntil : JQuery -> JQueryIO JQuery
+getNextUntil q = do
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.nextUntil()" [FPtr] FPtr) p
+
+public
+getNextUntilSelector : Selector s => s -> JQuery -> JQueryIO JQuery
+getNextUntilSelector s q = do
+  s <- getSelectorPtr s
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.nextUntil(%1)" [FPtr, FPtr] FPtr) p s
+
+public
+getNextUntilSelectorFilter : (Selector s, Selector t) => s -> t -> JQuery -> JQueryIO JQuery
+getNextUntilSelectorFilter s t q = do
+  s <- getSelectorPtr s
+  t <- getSelectorPtr t
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.nextUntil(%1, %2)" [FPtr, FPtr, FPtr] FPtr) p s t
+
+public
+getNextUntilElement : Element -> JQuery -> JQueryIO JQuery
+getNextUntilElement (MkElement s) q = do
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.nextUntil(%1)" [FPtr, FPtr] FPtr) p s
+
+public
+getNextUntilElementFilter : Selector t => Element -> t -> JQuery -> JQueryIO JQuery
+getNextUntilElementFilter (MkElement s) t q = do
+  t <- getSelectorPtr t
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.nextUntil(%1, %2)" [FPtr, FPtr, FPtr] FPtr) p s t
