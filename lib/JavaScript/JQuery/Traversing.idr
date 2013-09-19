@@ -89,3 +89,9 @@ end : JQuery -> JQueryIO JQuery
 end q = do
   p <- getContentPtr q
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.end()" [FPtr] FPtr) p
+
+public
+eq : Int -> JQuery -> JQueryIO JQuery
+eq i q = do
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.eq(%1)" [FPtr, FInt] FPtr) p i
