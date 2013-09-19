@@ -164,7 +164,7 @@ public
 hasClass : String -> JQuery -> JQueryIO Bool
 hasClass k q = do
   p <- getContentPtr q
-  s <- liftIO $ mkForeign (FFun "%0.hasClass(%1)" [FPtr, FString] FString) p k
+  s <- liftIO $ mkForeign (FFun "%0.hasClass(%1).toString()" [FPtr, FString] FString) p k
   return $ s /= "false"
 
 public
