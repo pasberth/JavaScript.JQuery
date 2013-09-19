@@ -122,17 +122,19 @@ hasElement (MkElement s) q = do
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.has(%1)" [FPtr, FPtr] FPtr) p s
 
 public
-is : Content c => c -> JQuery -> JQueryIO JQuery
+is : Content c => c -> JQuery -> JQueryIO Bool
 is c q = do
   c <- getContentPtr c
   p <- getContentPtr q
-  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.is(%1)" [FPtr, FPtr] FPtr) p c
+  s <- liftIO $ mkForeign (FFun "%0.is(%1)" [FPtr, FPtr] FString) p c
+  return $ s /= "false"
 
-isWith : (Int -> Element -> JQueryIO Bool) -> JQuery -> JQueryIO JQuery
+isWith : (Int -> Element -> JQueryIO Bool) -> JQuery -> JQueryIO Bool
 isWith f q = do
   let f' = \p => \i => runJQueryIO $ f i $ MkElement p
   p <- getContentPtr q
-  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.is(function () { return %1.apply(this, [this].concat([].slice.call(arguments, 0))) })" [FPtr, FFunction FPtr (FFunction FInt (FAny (IO Bool)))] FPtr) p f'
+  s <- liftIO $ mkForeign (FFun "%0.is(function () { return %1.apply(this, [this].concat([].slice.call(arguments, 0))) })" [FPtr, FFunction FPtr (FFunction FInt (FAny (IO Bool)))] FString) p f'
+  return $ s /= "false"
 
 public
 getLast : JQuery -> JQueryIO JQuery
