@@ -146,3 +146,17 @@ first : JQuery -> JQueryIO JQuery
 first q = do
   p <- getContentPtr q
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.first()" [FPtr] FPtr) p
+
+
+public
+hasSelector : Selector s => s -> JQuery -> JQueryIO JQuery
+hasSelector s q = do
+  s <- getSelectorPtr s
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.has(%1)" [FPtr, FPtr] FPtr) p s
+
+public
+hasElement : Element -> JQuery -> JQueryIO JQuery
+hasElement (MkElement s) q = do
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.has(%1)" [FPtr, FPtr] FPtr) p s
