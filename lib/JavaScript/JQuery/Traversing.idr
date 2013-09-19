@@ -120,3 +120,23 @@ filterWith f q = do
   let f' = \p => \i => runJQueryIO $ f i $ MkElement p
   p <- getContentPtr q
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.filter(function () { return %1.apply(this, [this].concat([].slice.call(arguments, 0))) })" [FPtr, FFunction FPtr (FFunction FInt (FAny (IO Bool)))] FPtr) p f'
+
+public
+findSelector : Selector s => s -> JQuery -> JQueryIO JQuery
+findSelector s q = do
+  s <- getSelectorPtr s
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.find(%1)" [FPtr, FPtr] FPtr) p s
+
+public
+findElement : Element -> JQuery -> JQueryIO JQuery
+findElement (MkElement s) q = do
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.find(%1)" [FPtr, FPtr] FPtr) p s
+
+public
+findJQuery : JQuery -> JQuery -> JQueryIO JQuery
+findJQuery s q = do
+  s <- getContentPtr s
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.find(%1)" [FPtr, FPtr] FPtr) p s
