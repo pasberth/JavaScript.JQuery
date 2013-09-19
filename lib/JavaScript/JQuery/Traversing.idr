@@ -142,8 +142,8 @@ findJQuery s q = do
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.find(%1)" [FPtr, FPtr] FPtr) p s
 
 public
-first : JQuery -> JQueryIO JQuery
-first q = do
+getFirst : JQuery -> JQueryIO JQuery
+getFirst q = do
   p <- getContentPtr q
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.first()" [FPtr] FPtr) p
 
@@ -187,10 +187,23 @@ isWith f q = do
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.is(function () { return %1.apply(this, [this].concat([].slice.call(arguments, 0))) })" [FPtr, FFunction FPtr (FFunction FInt (FAny (IO Bool)))] FPtr) p f'
 
 public
-last : JQuery -> JQueryIO JQuery
-last q = do
+getLast : JQuery -> JQueryIO JQuery
+getLast q = do
   p <- getContentPtr q
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.last()" [FPtr] FPtr) p
 
 -- TODO:
 -- .map()
+
+public
+getNext : JQuery -> JQueryIO JQuery
+getNext q = do
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.next()" [FPtr] FPtr) p
+
+public
+getNextSelector : Selector s => s -> JQuery -> JQueryIO JQuery
+getNextSelector s q = do
+  s <- getSelectorPtr s
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.next(%1)" [FPtr, FPtr] FPtr) p s
