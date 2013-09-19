@@ -207,3 +207,16 @@ getNextSelector s q = do
   s <- getSelectorPtr s
   p <- getContentPtr q
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.next(%1)" [FPtr, FPtr] FPtr) p s
+
+public
+getNextAll : JQuery -> JQueryIO JQuery
+getNextAll q = do
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.nextAll()" [FPtr] FPtr) p
+
+public
+getNextAllSelector : Selector s => s -> JQuery -> JQueryIO JQuery
+getNextAllSelector s q = do
+  s <- getSelectorPtr s
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.nextAll(%1)" [FPtr, FPtr] FPtr) p s
