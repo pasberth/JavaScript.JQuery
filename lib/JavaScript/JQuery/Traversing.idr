@@ -64,6 +64,7 @@ getContents q = do
   p <- getContentPtr q
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.contents()" [FPtr] FPtr) p
 
+public
 eachWith : (Int -> Element -> JQueryIO $ the Type ()) -> JQuery -> JQueryIO JQuery
 eachWith f q = do
   let f' = \p => \i => runJQueryIO $ f i $ MkElement p
@@ -89,6 +90,7 @@ filterContent c q = do
   p <- getContentPtr q
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.filter(%1)" [FPtr, FPtr] FPtr) p c
 
+public
 filterWith : (Int -> Element -> JQueryIO Bool) -> JQuery -> JQueryIO JQuery
 filterWith f q = do
   let f' = \p => \i => runJQueryIO $ f i $ MkElement p
@@ -129,6 +131,7 @@ is c q = do
   s <- liftIO $ mkForeign (FFun "%0.is(%1).toString()" [FPtr, FPtr] FString) p c
   return $ s /= "false"
 
+public
 isWith : (Int -> Element -> JQueryIO Bool) -> JQuery -> JQueryIO Bool
 isWith f q = do
   let f' = \p => \i => runJQueryIO $ f i $ MkElement p
