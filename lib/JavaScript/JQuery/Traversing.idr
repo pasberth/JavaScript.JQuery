@@ -140,3 +140,9 @@ findJQuery s q = do
   s <- getContentPtr s
   p <- getContentPtr q
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.find(%1)" [FPtr, FPtr] FPtr) p s
+
+public
+first : JQuery -> JQueryIO JQuery
+first q = do
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.first()" [FPtr] FPtr) p
