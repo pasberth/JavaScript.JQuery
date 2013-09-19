@@ -191,3 +191,6 @@ last : JQuery -> JQueryIO JQuery
 last q = do
   p <- getContentPtr q
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.last()" [FPtr] FPtr) p
+
+-- TODO:
+-- .map()
