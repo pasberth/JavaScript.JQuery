@@ -202,3 +202,16 @@ getNextUntilElementFilter (MkElement s) t q = do
   t <- getSelectorPtr t
   p <- getContentPtr q
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.nextUntil(%1, %2)" [FPtr, FPtr, FPtr] FPtr) p s t
+
+public
+notContent : Content c => c -> JQuery -> JQueryIO JQuery
+notContent c q = do
+  c <- getContentPtr c
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.not(%1)" [FPtr, FPtr] FPtr) p c
+
+notWith : (Int -> Element -> JQueryIO Bool) -> JQuery -> JQueryIO JQuery
+notWith f q = do
+  let f' = \p => \i => runJQueryIO $ f i $ MkElement p
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.not(function () { return %1.apply(this, [this].concat([].slice.call(arguments, 0))) })" [FPtr, FFunction FPtr (FFunction FInt (FAny (IO Bool)))] FPtr) p f'
