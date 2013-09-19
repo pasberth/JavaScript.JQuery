@@ -71,3 +71,9 @@ getClosestElement : Element -> JQuery -> JQueryIO JQuery
 getClosestElement (MkElement s) q = do
   p <- getContentPtr q
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.closest(%1)" [FPtr, FPtr] FPtr) p s
+
+public
+getContents : JQuery -> JQueryIO JQuery
+getContents q = do
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.contents()" [FPtr] FPtr) p
