@@ -1,8 +1,8 @@
 module JavaScript.JQuery.Types
 
 abstract
-data JQueryIO : {a : Type} ->  a -> Type where
-  MkJQueryIO : {a : Type} -> IO a -> JQueryIO a
+data JQueryIO : Type -> Type where
+  MkJQueryIO : IO a -> JQueryIO a
 
 instance Functor JQueryIO where
   map f (MkJQueryIO io) = MkJQueryIO $ map f io
