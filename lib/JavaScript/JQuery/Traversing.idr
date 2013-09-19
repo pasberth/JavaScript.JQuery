@@ -295,3 +295,16 @@ getPrevSelector s q = do
   s <- getSelectorPtr s
   p <- getContentPtr q
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.prev(%1)" [FPtr, FPtr] FPtr) p s
+
+public
+getPrevAll : JQuery -> JQueryIO JQuery
+getPrevAll q = do
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.prevAll()" [FPtr] FPtr) p
+
+public
+getPrevAllSelector : Selector s => s -> JQuery -> JQueryIO JQuery
+getPrevAllSelector s q = do
+  s <- getSelectorPtr s
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.prevAll(%1)" [FPtr, FPtr] FPtr) p s
