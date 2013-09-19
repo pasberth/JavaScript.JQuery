@@ -83,24 +83,11 @@ eq i q = do
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.eq(%1)" [FPtr, FInt] FPtr) p i
 
 public
-filterSelector : Selector s => s -> JQuery -> JQueryIO JQuery
-filterSelector s q = do
-  s <- getSelectorPtr s
+filterContent : Content c => c -> JQuery -> JQueryIO JQuery
+filterContent c q = do
+  c <- getContentPtr c
   p <- getContentPtr q
-  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.filter(%1)" [FPtr, FPtr] FPtr) p s
-
-public
-filterElement : Element -> JQuery -> JQueryIO JQuery
-filterElement (MkElement s) q = do
-  p <- getContentPtr q
-  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.filter(%1)" [FPtr, FPtr] FPtr) p s
-
-public
-filterJQuery : JQuery -> JQuery -> JQueryIO JQuery
-filterJQuery s q = do
-  s <- getContentPtr s
-  p <- getContentPtr q
-  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.filter(%1)" [FPtr, FPtr] FPtr) p s
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.filter(%1)" [FPtr, FPtr] FPtr) p c
 
 filterWith : (Int -> Element -> JQueryIO Bool) -> JQuery -> JQueryIO JQuery
 filterWith f q = do
@@ -109,24 +96,11 @@ filterWith f q = do
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.filter(function () { return %1.apply(this, [this].concat([].slice.call(arguments, 0))) })" [FPtr, FFunction FPtr (FFunction FInt (FAny (IO Bool)))] FPtr) p f'
 
 public
-findSelector : Selector s => s -> JQuery -> JQueryIO JQuery
-findSelector s q = do
-  s <- getSelectorPtr s
+findContent : Content c => c -> JQuery -> JQueryIO JQuery
+findContent c q = do
+  c <- getContentPtr c
   p <- getContentPtr q
-  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.find(%1)" [FPtr, FPtr] FPtr) p s
-
-public
-findElement : Element -> JQuery -> JQueryIO JQuery
-findElement (MkElement s) q = do
-  p <- getContentPtr q
-  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.find(%1)" [FPtr, FPtr] FPtr) p s
-
-public
-findJQuery : JQuery -> JQuery -> JQueryIO JQuery
-findJQuery s q = do
-  s <- getContentPtr s
-  p <- getContentPtr q
-  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.find(%1)" [FPtr, FPtr] FPtr) p s
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.find(%1)" [FPtr, FPtr] FPtr) p c
 
 public
 getFirst : JQuery -> JQueryIO JQuery
