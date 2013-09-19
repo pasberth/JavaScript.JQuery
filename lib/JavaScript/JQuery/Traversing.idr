@@ -221,3 +221,16 @@ getOffsetParent : JQuery -> JQueryIO JQuery
 getOffsetParent q = do
   p <- getContentPtr q
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.offsetParent()" [FPtr] FPtr) p
+
+public
+getParent : JQuery -> JQueryIO JQuery
+getParent q = do
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.parent()" [FPtr] FPtr) p
+
+public
+getParentSelector : Selector s => s -> JQuery -> JQueryIO JQuery
+getParentSelector s q = do
+  s <- getSelectorPtr s
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.parent(%1)" [FPtr, FPtr] FPtr) p s
