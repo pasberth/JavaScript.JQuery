@@ -50,7 +50,6 @@ getClosest s q = do
   p <- getContentPtr q
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.closest(%1)" [FPtr, FPtr] FPtr) p s
 
-
 public
 getClosestContext : Selector s => s -> Element -> JQuery -> JQueryIO JQuery
 getClosestContext s e q = do
@@ -78,8 +77,8 @@ getContents q = do
   p <- getContentPtr q
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.contents()" [FPtr] FPtr) p
 
-each : (Int -> Element -> JQueryIO $ the Type ()) -> JQuery -> JQueryIO JQuery
-each f q = do
+eachWith : (Int -> Element -> JQueryIO $ the Type ()) -> JQuery -> JQueryIO JQuery
+eachWith f q = do
   let f' = \p => \i => runJQueryIO $ f i $ MkElement p
   p <- getContentPtr q
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.each(function () { return %1.apply(this, [this].concat([].slice.call(arguments, 0))) })" [FPtr, FFunction FPtr (FFunction FInt (FAny (IO ())))] FPtr) p f'
@@ -95,3 +94,29 @@ eq : Int -> JQuery -> JQueryIO JQuery
 eq i q = do
   p <- getContentPtr q
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.eq(%1)" [FPtr, FInt] FPtr) p i
+
+public
+filterSelector : Selector s => s -> JQuery -> JQueryIO JQuery
+filterSelector s q = do
+  s <- getSelectorPtr s
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.filter(%1)" [FPtr, FPtr] FPtr) p s
+
+public
+filterElement : Element -> JQuery -> JQueryIO JQuery
+filterElement (MkElement s) q = do
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.filter(%1)" [FPtr, FPtr] FPtr) p s
+
+public
+filterJQuery : JQuery -> JQuery -> JQueryIO JQuery
+filterJQuery s q = do
+  s <- getContentPtr s
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.filter(%1)" [FPtr, FPtr] FPtr) p s
+
+filterWith : (Int -> Element -> JQueryIO Bool) -> JQuery -> JQueryIO JQuery
+filterWith f q = do
+  let f' = \p => \i => runJQueryIO $ f i $ MkElement p
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.filter(function () { return %1.apply(this, [this].concat([].slice.call(arguments, 0))) })" [FPtr, FFunction FPtr (FFunction FInt (FAny (IO Bool)))] FPtr) p f'
