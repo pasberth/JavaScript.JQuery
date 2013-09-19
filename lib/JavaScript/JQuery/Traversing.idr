@@ -247,3 +247,38 @@ getParentsSelector s q = do
   s <- getSelectorPtr s
   p <- getContentPtr q
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.parents(%1)" [FPtr, FPtr] FPtr) p s
+
+
+public
+getParentsUntil : JQuery -> JQueryIO JQuery
+getParentsUntil q = do
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.parentsUntil()" [FPtr] FPtr) p
+
+public
+getParentsUntilSelector : Selector s => s -> JQuery -> JQueryIO JQuery
+getParentsUntilSelector s q = do
+  s <- getSelectorPtr s
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.parentsUntil(%1)" [FPtr, FPtr] FPtr) p s
+
+public
+getParentsUntilSelectorFilter : (Selector s, Selector t) => s -> t -> JQuery -> JQueryIO JQuery
+getParentsUntilSelectorFilter s t q = do
+  s <- getSelectorPtr s
+  t <- getSelectorPtr t
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.parentsUntil(%1, %2)" [FPtr, FPtr, FPtr] FPtr) p s t
+
+public
+getParentsUntilElement : Element -> JQuery -> JQueryIO JQuery
+getParentsUntilElement (MkElement s) q = do
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.parentsUntil(%1)" [FPtr, FPtr] FPtr) p s
+
+public
+getParentsUntilElementFilter : Selector t => Element -> t -> JQuery -> JQueryIO JQuery
+getParentsUntilElementFilter (MkElement s) t q = do
+  t <- getSelectorPtr t
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.parentsUntil(%1, %2)" [FPtr, FPtr, FPtr] FPtr) p s t
