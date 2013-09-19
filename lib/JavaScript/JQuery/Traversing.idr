@@ -29,3 +29,16 @@ addBackSelector s q = do
   s <- getSelectorPtr s
   p <- getContentPtr q
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.addBack(%1)" [FPtr, FPtr] FPtr) p s
+
+public
+getChildren : JQuery -> JQueryIO JQuery
+getChildren q = do
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.getChildren()" [FPtr] FPtr) p
+
+public
+getChildrenSelector : Selector s => s -> JQuery -> JQueryIO JQuery
+getChildrenSelector s q = do
+  s <- getSelectorPtr s
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.getChildren(%1)" [FPtr, FPtr] FPtr) p s
