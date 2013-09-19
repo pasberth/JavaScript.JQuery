@@ -147,7 +147,6 @@ first q = do
   p <- getContentPtr q
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.first()" [FPtr] FPtr) p
 
-
 public
 hasSelector : Selector s => s -> JQuery -> JQueryIO JQuery
 hasSelector s q = do
@@ -160,3 +159,29 @@ hasElement : Element -> JQuery -> JQueryIO JQuery
 hasElement (MkElement s) q = do
   p <- getContentPtr q
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.has(%1)" [FPtr, FPtr] FPtr) p s
+
+public
+isSelector : Selector s => s -> JQuery -> JQueryIO JQuery
+isSelector s q = do
+  s <- getSelectorPtr s
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.is(%1)" [FPtr, FPtr] FPtr) p s
+
+public
+isElement : Element -> JQuery -> JQueryIO JQuery
+isElement (MkElement s) q = do
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.is(%1)" [FPtr, FPtr] FPtr) p s
+
+public
+isJQuery : JQuery -> JQuery -> JQueryIO JQuery
+isJQuery s q = do
+  s <- getContentPtr s
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.is(%1)" [FPtr, FPtr] FPtr) p s
+
+isWith : (Int -> Element -> JQueryIO Bool) -> JQuery -> JQueryIO JQuery
+isWith f q = do
+  let f' = \p => \i => runJQueryIO $ f i $ MkElement p
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.is(function () { return %1.apply(this, [this].concat([].slice.call(arguments, 0))) })" [FPtr, FFunction FPtr (FFunction FInt (FAny (IO Bool)))] FPtr) p f'
