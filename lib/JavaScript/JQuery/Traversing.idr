@@ -355,3 +355,14 @@ getSiblingsSelector s q = do
   p <- getContentPtr q
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.siblings(%1)" [FPtr, FPtr] FPtr) p s
 
+public
+slice : Int -> Int -> JQuery -> JQueryIO JQuery
+slice i j q = do
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.slice(%1, %2)" [FPtr, FInt, FInt] FPtr) p i j
+
+public
+sliceToEnd : Int -> JQuery -> JQueryIO JQuery
+sliceToEnd i q = do
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.slice(%1, %2)" [FPtr, FInt] FPtr) p i
