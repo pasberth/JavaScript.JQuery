@@ -44,32 +44,19 @@ getChildrenSelector s q = do
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.children(%1)" [FPtr, FPtr] FPtr) p s
 
 public
-getClosest : Selector s => s -> JQuery -> JQueryIO JQuery
-getClosest s q = do
-  s <- getSelectorPtr s
+getClosest : Content c => c -> JQuery -> JQueryIO JQuery
+getClosest c q = do
+  c <- getContentPtr c
   p <- getContentPtr q
-  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.closest(%1)" [FPtr, FPtr] FPtr) p s
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.closest(%1)" [FPtr, FPtr] FPtr) p c
 
 public
-getClosestContext : Selector s => s -> Element -> JQuery -> JQueryIO JQuery
-getClosestContext s e q = do
-  s <- getSelectorPtr s
+getClosestContext : Content c => c -> Element -> JQuery -> JQueryIO JQuery
+getClosestContext c e q = do
+  c <- getContentPtr c
   e <- getContentPtr e
   p <- getContentPtr q
-  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.closest(%1, %2)" [FPtr, FPtr, FPtr] FPtr) p s e
-
-public
-getClosestJQuery : JQuery -> JQuery -> JQueryIO JQuery
-getClosestJQuery s q = do
-  s <- getContentPtr s
-  p <- getContentPtr q
-  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.closest(%1)" [FPtr, FPtr] FPtr) p s
-
-public
-getClosestElement : Element -> JQuery -> JQueryIO JQuery
-getClosestElement (MkElement s) q = do
-  p <- getContentPtr q
-  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.closest(%1)" [FPtr, FPtr] FPtr) p s
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.closest(%1, %2)" [FPtr, FPtr, FPtr] FPtr) p c e
 
 public
 getContents : JQuery -> JQueryIO JQuery
