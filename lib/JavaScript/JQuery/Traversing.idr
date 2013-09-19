@@ -341,3 +341,17 @@ getPrevUntilElementFilter (MkElement s) t q = do
   t <- getSelectorPtr t
   p <- getContentPtr q
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.prevUntil(%1, %2)" [FPtr, FPtr, FPtr] FPtr) p s t
+
+public
+getSiblings : JQuery -> JQueryIO JQuery
+getSiblings q = do
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.siblings()" [FPtr] FPtr) p
+
+public
+getSiblingsSelector : Selector s => s -> JQuery -> JQueryIO JQuery
+getSiblingsSelector s q = do
+  s <- getSelectorPtr s
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.siblings(%1)" [FPtr, FPtr] FPtr) p s
+
