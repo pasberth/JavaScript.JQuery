@@ -77,3 +77,9 @@ getContents : JQuery -> JQueryIO JQuery
 getContents q = do
   p <- getContentPtr q
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.contents()" [FPtr] FPtr) p
+
+each : (Int -> Element -> JQueryIO $ the Type ()) -> JQuery -> JQueryIO JQuery
+each f q = do
+  let f' = \p => \i => runJQueryIO $ f i $ MkElement p
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.each(function () { return %1.apply(this, [this].concat([].slice.call(arguments, 0))) })" [FPtr, FFunction FPtr (FFunction FInt (FAny (IO ())))] FPtr) p f'
