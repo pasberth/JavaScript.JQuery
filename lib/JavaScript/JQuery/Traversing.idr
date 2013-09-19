@@ -15,7 +15,7 @@ addSelectorContext s e q = do
   s <- getSelectorPtr s
   e <- getContentPtr e
   p <- getContentPtr q
-  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.add(%1, %1)" [FPtr, FPtr, FPtr] FPtr) p s e
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.add(%1, %2)" [FPtr, FPtr, FPtr] FPtr) p s e
 
 public
 addBack : JQuery -> JQueryIO JQuery
@@ -49,6 +49,15 @@ getClosest s q = do
   s <- getSelectorPtr s
   p <- getContentPtr q
   liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.closest(%1)" [FPtr, FPtr] FPtr) p s
+
+
+public
+getClosestContext : Selector s => s -> Element -> JQuery -> JQueryIO JQuery
+getClosestContext s e q = do
+  s <- getSelectorPtr s
+  e <- getContentPtr e
+  p <- getContentPtr q
+  liftIOPtrToJQueryIOJQuery $ mkForeign (FFun "%0.closest(%1, %2)" [FPtr, FPtr, FPtr] FPtr) p s e
 
 public
 getClosestJQuery : JQuery -> JQuery -> JQueryIO JQuery
