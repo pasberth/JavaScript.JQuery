@@ -1,0 +1,4 @@
+package jquery
+
+opts    = ""
+modules = JavaScript.JQuery, JavaScript.JQuery.Core, JavaScript.JQuery.Events, JavaScript.JQuery.Manipulation, JavaScript.JQuery.Traversing, JavaScript.JQuery.Types
